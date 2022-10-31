@@ -17,8 +17,8 @@ type AuthBrokerStatus struct {
 type Authentication struct {
 	Text             string           `xml:",chardata"`
 	AuthBrokerStatus AuthBrokerStatus `xml:"authBrokerStatus"`
-	SuccessLogins    string           `xml:"successLogins"`
-	FailedLogins     string           `xml:"failedLogins"`
+	SuccessLogins    float64          `xml:"successLogins"`
+	FailedLogins     float64          `xml:"failedLogins"`
 }
 
 type AirwatchTunnelGatewayStats struct {
@@ -81,9 +81,9 @@ type AirwatchTunnelGatewayStats struct {
 	CascadeMode                   string  `xml:"cascadeMode"`
 	CascadeModeBackends           string  `xml:"cascadeModeBackends"`
 	CascadeModeBackendsDown       string  `xml:"cascadeModeBackendsDown"`
-	CpuCores                      string  `xml:"cpuCores"`
-	CpuUsages                     string  `xml:"cpuUsages"`
-	TotalCpuUsage                 string  `xml:"totalCpuUsage"`
+	CpuCores                      float64 `xml:"cpuCores"`
+	CpuUsages                     float64 `xml:"cpuUsages"`
+	TotalCpuUsage                 float64 `xml:"totalCpuUsage"`
 	ConnectionManagerSnapshot     struct {
 		Text              string  `xml:",chardata"`
 		ConnectionsPerSec float64 `xml:"connectionsPerSec"`
@@ -190,10 +190,9 @@ var (
 		},
 	)
 	date = prometheus.NewDesc(
-		prometheus.GaugeOpts{
-			Name: "Date",
-			Help: "Date help",
-		},
+		"Date",
+		"Date help",
+		nil, nil,
 	)
 	overAllStatus = prometheus.NewGauge(
 		prometheus.GaugeOpts{
@@ -206,7 +205,6 @@ var (
 			Name: "AuthBrokerStatusReason",
 			Help: "AuthBrokerStatusReason help",
 		},
-		[]string
 	)
 
 	authenticationAuthBrokerStatus = prometheus.NewGauge(
@@ -403,10 +401,10 @@ var (
 			Help: "airwatchTunnelGatewayStatsTotalNatTCPSegmentsRetransmitted help",
 		},
 	)
-	airwatchTunnelGatewayStatsNatTCPDownBitPerSect = prometheus.NewGauge(
+	airwatchTunnelGatewayStatsNatTCPDownBitPerSec = prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Name: "airwatchTunnelGatewayStatsNatTCPDownBitPerSect",
-			Help: "airwatchTunnelGatewayStatsNatTCPDownBitPerSect help",
+			Name: "airwatchTunnelGatewayStatsNatTCPDownBitPerSec",
+			Help: "airwatchTunnelGatewayStatsNatTCPDownBitPerSec help",
 		},
 	)
 	airwatchTunnelGatewayStatsNatTCPUpBitPerSec = prometheus.NewGauge(
@@ -682,7 +680,7 @@ func init() {
 	prometheus.MustRegister(airwatchTunnelGatewayStatsTotalNatTCPsSinceStart)
 	prometheus.MustRegister(airwatchTunnelGatewayStatsNatTCPSegmentsSent)
 	prometheus.MustRegister(airwatchTunnelGatewayStatsTotalNatTCPSegmentsRetransmitted)
-	prometheus.MustRegister(airwatchTunnelGatewayStatsNatTCPDownBitPerSect)
+	prometheus.MustRegister(airwatchTunnelGatewayStatsNatTCPDownBitPerSec)
 	prometheus.MustRegister(airwatchTunnelGatewayStatsNatTCPUpBitPerSec)
 	prometheus.MustRegister(airwatchTunnelGatewayStatsNatUDPs)
 	prometheus.MustRegister(airwatchTunnelGatewayStatsNatUDPHighWaterMark)
@@ -747,80 +745,81 @@ func getStats(args *Args) {
 	openIncomingConnectionCount.Set(a.OpenIncomingConnectionCount)
 	highWaterMark.Set(a.HighWaterMark)
 	timeStamp.Set(a.TimeStamp)
-	//	date.Add(a.Date)
+	//	date.Set(a.Date)
 	//	overAllStatus.Set(a.OverAllStatus)
-	authenticationAuthBrokerStatusReason.Set(a.Authentication.AuthBrokerStatus.Reason)
-	authenticationAuthBrokerStatus.Set(a.authenticationAuthBrokerStatus)
-	authenticationSuccessLogins.Set(a.authenticationSuccessLogins)
-	authenticationFailedLogins.Set()
-	airwatchTunnelGatewayStatsBackendStatus
-	airwatchTunnelGatewayStatsBackendStatusReason
-	airwatchTunnelGatewayStatsEdgeServiceSessionStatsIdentifier
-	airwatchTunnelGatewayStatsEdgeServiceSessionStatsTotalSessions
-	airwatchTunnelGatewayStatsEdgeServiceSessionStatsHighWaterMarkOfSessions
-	airwatchTunnelGatewayStatsEdgeServiceSessionStatsAuthenticatedSessions
-	airwatchTunnelGatewayStatsEdgeServiceSessionStatsUnauthenticatedSessions
-	airwatchTunnelGatewayStatsEdgeServiceSessionStatsFailedLoginAttempts
-	airwatchTunnelGatewayStatsEdgeServiceSessionStatsUserCount
-	airwatchTunnelGatewayStatsEdgeServiceStatus
-	airwatchTunnelGatewayStatsEdgeServiceStatusReason
-	airwatchTunnelGatewayStatsSessions
-	airwatchTunnelGatewayStatsSessionsHighWaterMark
-	airwatchTunnelGatewayStatsInternalSessions
-	airwatchTunnelGatewayStatsTotalSessionsSinceStart
-	airwatchTunnelGatewayStatsSessionClosedHandshakes
-	airwatchTunnelGatewayStatsSessionFailedHandshakes
-	airwatchTunnelGatewayStatsConnections
-	airwatchTunnelGatewayStatsConnectionsHighWaterMark
-	airwatchTunnelGatewayStatsTotalTCPConnectionsSinceStart
-	airwatchTunnelGatewayStatsTotalUDPConnectionsSinceStart
-	airwatchTunnelGatewayStatsTotalSSLConnectionsSinceStart
-	airwatchTunnelGatewayStatsTimers
-	airwatchTunnelGatewayStatsTimerHighWaterMark
-	airwatchTunnelGatewayStatsNatTCPs
-	airwatchTunnelGatewayStatsNatTCPHighWaterMark
-	airwatchTunnelGatewayStatsTotalNatTCPsSinceStart
-	airwatchTunnelGatewayStatsNatTCPSegmentsSent
-	airwatchTunnelGatewayStatsTotalNatTCPSegmentsRetransmitted
-	airwatchTunnelGatewayStatsNatTCPDownBitPerSect
-	airwatchTunnelGatewayStatsNatTCPUpBitPerSec
-	airwatchTunnelGatewayStatsNatUDPs
-	airwatchTunnelGatewayStatsNatUDPHighWaterMark
-	airwatchTunnelGatewayStatsNatUDPTotalSinceStart
-	airwatchTunnelGatewayStatsNatUDPDownBitPerSec
-	airwatchTunnelGatewayStatsNatUDPUpBitPerSec
-	airwatchTunnelGatewayStatsFlowCollectorsHighWaterMark
-	airwatchTunnelGatewayStatsFlowCollectorsTotalSinceStart
-	airwatchTunnelGatewayStatsUseTrafficRules
-	airwatchTunnelGatewayStatsTrafficRuleProxies
-	airwatchTunnelGatewayStatsApiConnectivity
-	airwatchTunnelGatewayStatsAwcmConnectivity
-	airwatchTunnelGatewayStatsCascadeMode
-	airwatchTunnelGatewayStatsCascadeModeBackends
-	airwatchTunnelGatewayStatsCascadeModeBackendsDown
-	airwatchTunnelGatewayStatsCpuCores
-	airwatchTunnelGatewayStatsCpuUsages
-	airwatchTunnelGatewayStatsConnectionManagerSnapshotConnectionsPerSec
-	airwatchTunnelGatewayStatsConnectionManagerSnapshotHandshakePerSec
-	airwatchTunnelGatewayStatsConnectionManagerSnapshotUpBitPerSec
-	airwatchTunnelGatewayStatsTotalCpuUsage
-	airwatchTunnelGatewayStatsSessionManagerSnapshotConnectionsPerSec
-	airwatchTunnelGatewayStatsSessionManagerSnapshotDownBitPerSec
-	airwatchTunnelGatewayStatsSessionManagerSnapshotHandshakePerSec
-	airwatchTunnelGatewayStatsSessionManagerSnapshotUpBitPerSec
-	edgeServiceSessionStats
-	applianceStatsCpuCores
-	applianceStatsTotalCpuLoadPercent
-	applianceStatsTotalMemoryMb
-	applianceStatsFreeMemoryMb
-	applianceStatsCpuDetailedStatsIdle
-	applianceStatsCpuDetailedStatsIoWait
-	applianceStatsCpuDetailedStatsIrq
-	applianceStatsCpuDetailedStatsNice
-	applianceStatsCpuDetailedStatsSoftIrq
-	applianceStatsCpuDetailedStatsSteal
-	applianceStatsCpuDetailedStatsSystem
-	applianceStatsCpuDetailedStatsUser
+	//	authenticationAuthBrokerStatusReason.Set(a.Authentication.AuthBrokerStatus.Reason)
+	//	authenticationAuthBrokerStatus.Set(a.authenticationAuthBrokerStatus)
+	authenticationSuccessLogins.Set(a.Authentication.SuccessLogins)
+	authenticationFailedLogins.Set(a.Authentication.FailedLogins)
+	//	airwatchTunnelGatewayStatsBackendStatus.Set(a.AirwatchTunnelGatewayStats.BackendStatus)
+	//	airwatchTunnelGatewayStatsBackendStatusReason.Set(a.AirwatchTunnelGatewayStats.BackendStatusreason)
+	//  airwatchTunnelGatewayStatsEdgeServiceSessionStatsIdentifier.Set(a.AirwatchTunnelGatewayStats.EdgeServiceSessionStats.Identifier)
+	airwatchTunnelGatewayStatsEdgeServiceSessionStatsTotalSessions.Set(a.AirwatchTunnelGatewayStats.TotalSessionsSinceStart)
+	airwatchTunnelGatewayStatsEdgeServiceSessionStatsHighWaterMarkOfSessions.Set(a.AirwatchTunnelGatewayStats.EdgeServiceSessionStats.HighWaterMarkOfSessions)
+	airwatchTunnelGatewayStatsEdgeServiceSessionStatsAuthenticatedSessions.Set(a.AirwatchTunnelGatewayStats.EdgeServiceSessionStats.AuthenticatedSessions)
+	airwatchTunnelGatewayStatsEdgeServiceSessionStatsUnauthenticatedSessions.Set(a.AirwatchTunnelGatewayStats.EdgeServiceSessionStats.UnauthenticatedSessions)
+	airwatchTunnelGatewayStatsEdgeServiceSessionStatsFailedLoginAttempts.Set(a.AirwatchTunnelGatewayStats.EdgeServiceSessionStats.FailedLoginAttempts)
+	airwatchTunnelGatewayStatsEdgeServiceSessionStatsUserCount.Set(a.AirwatchTunnelGatewayStats.EdgeServiceSessionStats.UserCount)
+	//	airwatchTunnelGatewayStatsEdgeServiceStatus.Set()
+	//	airwatchTunnelGatewayStatsEdgeServiceStatusReason
+	airwatchTunnelGatewayStatsSessions.Set(a.AirwatchTunnelGatewayStats.Sessions)
+	airwatchTunnelGatewayStatsSessionsHighWaterMark.Set(a.AirwatchTunnelGatewayStats.SessionsHighWaterMark)
+	airwatchTunnelGatewayStatsInternalSessions.Set(a.AirwatchTunnelGatewayStats.InternalSessions)
+	airwatchTunnelGatewayStatsTotalSessionsSinceStart.Set(a.AirwatchTunnelGatewayStats.TotalSessionsSinceStart)
+	airwatchTunnelGatewayStatsSessionClosedHandshakes.Set(a.AirwatchTunnelGatewayStats.SessionClosedHandshakes)
+	airwatchTunnelGatewayStatsSessionFailedHandshakes.Set(a.AirwatchTunnelGatewayStats.SessionFailedHandshakes)
+	airwatchTunnelGatewayStatsConnections.Set(a.AirwatchTunnelGatewayStats.Connections)
+	airwatchTunnelGatewayStatsConnectionsHighWaterMark.Set(a.AirwatchTunnelGatewayStats.ConnectionsHighWaterMark)
+	airwatchTunnelGatewayStatsTotalTCPConnectionsSinceStart.Set(a.AirwatchTunnelGatewayStats.TotalTCPConnectionsSinceStart)
+	airwatchTunnelGatewayStatsTotalUDPConnectionsSinceStart.Set(a.AirwatchTunnelGatewayStats.TotalUDPConnectionsSinceStart)
+	airwatchTunnelGatewayStatsTotalSSLConnectionsSinceStart.Set(a.AirwatchTunnelGatewayStats.TotalSSLConnectionsSinceStart)
+	airwatchTunnelGatewayStatsTimers.Set(a.AirwatchTunnelGatewayStats.Timers)
+	airwatchTunnelGatewayStatsTimerHighWaterMark.Set(a.AirwatchTunnelGatewayStats.TimerHighWaterMark)
+	airwatchTunnelGatewayStatsNatTCPs.Set(a.AirwatchTunnelGatewayStats.NatTCPs)
+	airwatchTunnelGatewayStatsNatTCPHighWaterMark.Set(a.AirwatchTunnelGatewayStats.NatTCPHighWaterMark)
+	airwatchTunnelGatewayStatsTotalNatTCPsSinceStart.Set(a.AirwatchTunnelGatewayStats.TotalNatTCPsSinceStart)
+	airwatchTunnelGatewayStatsNatTCPSegmentsSent.Set(a.AirwatchTunnelGatewayStats.NatTCPSegmentsSent)
+	airwatchTunnelGatewayStatsTotalNatTCPSegmentsRetransmitted.Set(a.AirwatchTunnelGatewayStats.NatTCPSegmentsRetransmitted)
+	airwatchTunnelGatewayStatsNatTCPDownBitPerSec.Set(a.AirwatchTunnelGatewayStats.NatTCPDownBitPerSec)
+	airwatchTunnelGatewayStatsNatTCPUpBitPerSec.Set(a.AirwatchTunnelGatewayStats.NatTCPUpBitPerSec)
+	airwatchTunnelGatewayStatsNatUDPs.Set(a.AirwatchTunnelGatewayStats.NatUDPs)
+	airwatchTunnelGatewayStatsNatUDPHighWaterMark.Set(a.AirwatchTunnelGatewayStats.NatUDPHighWaterMark)
+	airwatchTunnelGatewayStatsNatUDPTotalSinceStart.Set(a.AirwatchTunnelGatewayStats.NatUDPTotalSinceStart)
+	airwatchTunnelGatewayStatsNatUDPDownBitPerSec.Set(a.AirwatchTunnelGatewayStats.NatUDPDownBitPerSec)
+	airwatchTunnelGatewayStatsNatUDPUpBitPerSec.Set(a.AirwatchTunnelGatewayStats.NatUDPUpBitPerSec)
+	airwatchTunnelGatewayStatsFlowCollectorsHighWaterMark.Set(a.AirwatchTunnelGatewayStats.FlowCollectorsHighWaterMark)
+	airwatchTunnelGatewayStatsFlowCollectorsTotalSinceStart.Set(a.AirwatchTunnelGatewayStats.FlowCollectorsTotalSinceStart)
+	//	airwatchTunnelGatewayStatsUseTrafficRules.Set(a.AirwatchTunnelGatewayStats.UseTrafficRules)
+	airwatchTunnelGatewayStatsTrafficRuleProxies.Set(a.AirwatchTunnelGatewayStats.TrafficRuleProxies)
+	//	airwatchTunnelGatewayStatsApiConnectivity.Set(a.AirwatchTunnelGatewayStats.ApiConnectivity)
+	//	airwatchTunnelGatewayStatsAwcmConnectivity.Set(a.AirwatchTunnelGatewayStats.AwcmConnectivity)
+	//	airwatchTunnelGatewayStatsCascadeMode.Set(a.AirwatchTunnelGatewayStats.CascadeMode)
+	//	airwatchTunnelGatewayStatsCascadeModeBackends.Set(a.AirwatchTunnelGatewayStats.CascadeModeBackends)
+	//	airwatchTunnelGatewayStatsCascadeModeBackendsDown.Set(a.AirwatchTunnelGatewayStats.CascadeModeBackendsDown)
+	airwatchTunnelGatewayStatsCpuCores.Set(a.AirwatchTunnelGatewayStats.CpuCores)
+	airwatchTunnelGatewayStatsCpuUsages.Set(a.AirwatchTunnelGatewayStats.CpuUsages)
+	airwatchTunnelGatewayStatsConnectionManagerSnapshotConnectionsPerSec.Set(a.AirwatchTunnelGatewayStats.ConnectionManagerSnapshot.ConnectionsPerSec)
+	airwatchTunnelGatewayStatsConnectionManagerSnapshotHandshakePerSec.Set(a.AirwatchTunnelGatewayStats.ConnectionManagerSnapshot.HandshakePerSec)
+	airwatchTunnelGatewayStatsConnectionManagerSnapshotUpBitPerSec.Set(a.AirwatchTunnelGatewayStats.ConnectionManagerSnapshot.HandshakePerSec)
+	airwatchTunnelGatewayStatsTotalCpuUsage.Set(a.AirwatchTunnelGatewayStats.TotalCpuUsage)
+	airwatchTunnelGatewayStatsSessionManagerSnapshotConnectionsPerSec.Set(a.AirwatchTunnelGatewayStats.SessionManagerSnapshot.ConnectionsPerSec)
+	airwatchTunnelGatewayStatsSessionManagerSnapshotDownBitPerSec.Set(a.AirwatchTunnelGatewayStats.SessionManagerSnapshot.DownBitPerSec)
+	airwatchTunnelGatewayStatsSessionManagerSnapshotHandshakePerSec.Set(a.AirwatchTunnelGatewayStats.SessionManagerSnapshot.HandshakePerSec)
+	airwatchTunnelGatewayStatsSessionManagerSnapshotUpBitPerSec.Set(a.AirwatchTunnelGatewayStats.SessionManagerSnapshot.UpBitPerSec)
+	//	edgeServiceSessionStats.Set(a.EdgeServiceSessionStats)
+	applianceStatsCpuCores.Set(a.ApplianceStats.CpuCores)
+	applianceStatsTotalCpuLoadPercent.Set(a.ApplianceStats.TotalCpuLoadPercent)
+	applianceStatsTotalMemoryMb.Set(a.ApplianceStats.TotalMemoryMb)
+	applianceStatsFreeMemoryMb.Set(a.ApplianceStats.FreeMemoryMb)
+	applianceStatsCpuDetailedStatsIdle.Set(a.ApplianceStats.CpuDetailedStats.Idle)
+	applianceStatsCpuDetailedStatsIoWait.Set(a.ApplianceStats.CpuDetailedStats.IoWait)
+	applianceStatsCpuDetailedStatsIrq.Set(a.ApplianceStats.CpuDetailedStats.Irq)
+	applianceStatsCpuDetailedStatsNice.Set(a.ApplianceStats.CpuDetailedStats.Nice)
+	applianceStatsCpuDetailedStatsSoftIrq.Set(a.ApplianceStats.CpuDetailedStats.SoftIrq)
+	applianceStatsCpuDetailedStatsSteal.Set(a.ApplianceStats.CpuDetailedStats.Steal)
+	applianceStatsCpuDetailedStatsSystem.Set(a.ApplianceStats.CpuDetailedStats.System)
+	applianceStatsCpuDetailedStatsUser.Set(a.ApplianceStats.CpuDetailedStats.User)
+
 	//	fmt.Println(a)
 	//	urlTarget := "https://" + args.IPAddr + "/api/types/System/instances/action/querySelectedStatistics"
 	//
